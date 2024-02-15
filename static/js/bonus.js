@@ -38,65 +38,99 @@ d3.json(url).then(function(data) {
   };
   
   // Function that builds the gauge chart
-  function buildGaugeChart(sample) {
-  
-      // Use D3 to retrieve all of the data
-      d3.json(url).then((data) => {
-  
-          // Retrieve all metadata
-          let metadata = data.metadata;
-  
-          // Filter based on the value of the sample
-          let value = metadata.filter(result => result.id == sample);
-  
-          // Log the array of metadata objects after the have been filtered
-          console.log(value)
-  
-          // Get the first index from the array
-          let valueData = value[0];
-  
-          // Use Object.entries to get the key/value pairs and put into the demographics box on the page
-          let washFrequency = Object.values(valueData)[6];
-          
-          // Set up the trace for the gauge chart
-          let trace2 = {
-              value: washFrequency,
-              domain: {x: [0,1], y: [0,1]},
-              title: {
-                  text: "<b>Belly Button Washing Frequency</b><br>Scrubs per Week",
-                  font: {color: "black", size: 16}
-              },
-              type: "indicator",
-              mode: "gauge+number",
-              gauge: {
-                  axis: {range: [0,10], tickmode: "linear", tick0: 2, dtick: 2},
-                  bar: {color: "black"},
-                  steps: [
-                      {range: [0, 1], color: "rgba(255, 255, 255, 0)"},
-                      {range: [1, 2], color: "rgba(232, 226, 202, .5)"},
-                      {range: [2, 3], color: "rgba(210, 206, 145, .5)"},
-                      {range: [3, 4], color:  "rgba(202, 209, 95, .5)"},
-                      {range: [4, 5], color:  "rgba(184, 205, 68, .5)"},
-                      {range: [5, 6], color: "rgba(170, 202, 42, .5)"},
-                      {range: [6, 7], color: "rgba(142, 178, 35 , .5)"},
-                      {range: [7, 8], color:  "rgba(110, 154, 22, .5)"},
-                      {range: [8, 9], color: "rgba(50, 143, 10, 0.5)"},
-                      {range: [9, 10], color: "rgba(14, 127, 0, .5)"},
-                  ]
-              } 
-          };
-  
-          // Set up the Layout
-          let layout = {
-              width: 400, 
-              height: 400,
-              margin: {t: 0, b:0}
-          };
-  
-          // Call Plotly to plot the gauge chart
-          Plotly.newPlot("gauge", [trace2], layout)
-      });
-  };
-  
-  // Call the initialize function
-  init();
+  function buildGaugeChart(washFrequency) {
+
+    // Gauge Chart Calculation
+    let level = parseFloat(washFrequency) * 20;
+    let degrees = 180 - level;
+    let radius = 0.5;
+    let radians = (degrees * Math.PI) / 180;
+    let x = radius * Math.cos(radians);
+    let y = radius * Math.sin(radians);
+
+    let mainPath = "M -.0 -0.05 L .0 0.05 L ";
+    let pathX = String(x);
+    let space = " ";
+    let pathY = String(y);
+    let pathEnd = " Z";
+    let path = mainPath.concat(pathX, space, pathY, pathEnd);
+
+    // Set up the trace for the gauge chart
+    let trace2 = {
+        type: "scatter",
+        x: [0],
+        y: [0],
+        marker: { size: 12, color: "850000" },
+        showlegend: false,
+        name: "Freq",
+        text: level,
+        hoverinfo: "text+name"
+    };
+
+    // Additional trace for the pie chart
+    let tracePie = {
+        values: [50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50],
+        rotation: 90,
+        text: ["8-9", "7-8", "6-7", "5-6", "4-5", "3-4", "2-3", "1-2", "0-1", ""],
+        textinfo: "text",
+        textposition: "inside",
+        marker: {
+            colors: [
+                "rgba(0, 105, 11, .5)",
+                "rgba(10, 120, 22, .5)",
+                "rgba(14, 127, 0, .5)",
+                "rgba(110, 154, 22, .5)",
+                "rgba(170, 202, 42, .5)",
+                "rgba(202, 209, 95, .5)",
+                "rgba(210, 206, 145, .5)",
+                "rgba(232, 226, 202, .5)",
+                "rgba(240, 230, 215, .5)",
+                "rgba(255, 255, 255, 0)"
+            ]
+        },
+        labels: ["8-9", "7-8", "6-7", "5-6", "4-5", "3-4", "2-3", "1-2", "0-1", ""],
+        hoverinfo: "label",
+        hole: 0.5,
+        type: "pie",
+        showlegend: false
+    };
+
+    // Set up the Layout
+    let layout = {
+        shapes: [
+            {
+                type: "path",
+                path: path,
+                fillcolor: "850000",
+                line: {
+                    color: "850000"
+                }
+            }
+        ],
+        title: "<b>Belly Button Washing Frequency</b> <br> Scrubs per Week",
+        height: 500,
+        width: 500,
+        xaxis: {
+            zeroline: false,
+            showticklabels: false,
+            showgrid: false,
+            range: [-1, 1]
+        },
+        yaxis: {
+            zeroline: false,
+            showticklabels: false,
+            showgrid: false,
+            range: [-1, 1]
+        }
+    };
+
+    let GAUGE = document.getElementById("gauge");
+
+    // Call Plotly to plot the gauge chart with both traces
+    Plotly.newPlot(GAUGE, [trace2, tracePie], layout);
+}
+
+// Example usage
+buildGaugeChart(5); 
+
+// Replace 5 with your actual wash frequency value
