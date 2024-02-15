@@ -45,5 +45,22 @@ Deploy your app to a free static page hosting service, such as GitHub Pages.
 Submit the links to your deployment and your GitHub repo. 
 Ensure that your repository has regular commits and a thorough README.md file
 
+Advanced Challenge Assignment (Optional with no extra points earning)
+The following task is advanced and therefore optional.
+
+Adapt the Gauge Chart from https://plot.ly/javascript/gauge-charts/Links to an external site. to plot the weekly washing frequency of the individual.
+
+You will need to modify the example gauge code to account for values ranging from 0 through 9.
+
+Update the chart whenever a new sample is selected.
+
+![image](https://github.com/BellaBeautiful4092023/Belly-Button-Challenge/assets/147251051/06067458-67e3-4ea0-bad8-9e5efa70c440)
+
+Hints
+Use console.log inside of your JavaScript code to see what your data looks like at each step.
+
+Refer to the Plotly.js documentationLinks to an external site. when building the plots.
+
+
 
 
